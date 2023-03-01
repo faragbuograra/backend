@@ -1,275 +1,180 @@
 <?php
-include 'inc/header.php';
-Session::CheckLogin();
+$filepath = realpath(dirname(__FILE__));
+include_once $filepath."/../lib/Session.php";
+Session::init();
+
+
+
+spl_autoload_register(function($classes){
+
+  include 'classes/'.$classes.".php";
+if (isset($_GET['action']) && $_GET['action'] == 'logout') {
+  // Session::set('logout', '<div class="alert alert-success alert-dismissible mt-3" id="flash-msg">
+  // <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  // <strong>Success !</strong> You are Logged Out Successfully !</div>');
+  Session::destroy();
+}
+
+});
+
+
+$users = new Users();
+
 ?>
-
-
-<?php
-
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
-   $userLog = $users->userLoginAuthotication($_POST);
-}
-if (isset($userLog)) {
-  echo $userLog;
-}
-
-$logout = Session::get('logout');
-if (isset($logout)) {
-  echo $logout;
-}
-
-
-
- ?>
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
+
 <head>
-  <meta charset="UTF-8">
+  <meta charset="utf-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
   <title>LBY</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  
 
+   
+    <link rel="stylesheet" href="assets/dataTables.bootstrap4.min.css">
+   <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+  <!-- Favicons <link href="assets/img/favicon.png" rel="icon">
+  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+<link rel="stylesheet" href="assets/bootstrap.min.css">
+  <link rel="stylesheet" href="assets/style.css">
+<link href="https://www.jqueryscript.net/css/jquerysctipttop.css" rel="stylesheet" type="text/css">
+<link href="filter.css" rel="stylesheet">
+  <link href="assets/vendor/swiper/swiper-bundle.min.css" rel="stylesheet">
+  <link href="assets/vendor/aos/aos.css" rel="stylesheet">  <script type="text/javascript" src="https://unpkg.com/xlsx@0.15.1/dist/xlsx.full.min.js"></script>
+ 
+   <link href="https://use.fontawesome.com/releases/v5.0.4/css/all.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Raleway:300,300i,400,400i,500,500i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet"> 
+
+  
+ <link rel="stylesheet" href="assets/dataTables.bootstrap4.min.css">
+
+  
+<link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+
+  <link href="assets/vendor/glightbox/css/glightbox.min.css" rel="stylesheet">
+ Vendor CSS Files -->
+ <link href="assets/vendor/boxicons/css/boxicons.min.css" rel="stylesheet">
+ <link href="assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
+ <link href="assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+ <link href="assets/css/style.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+  <!-- =======================================================
+  * Template Name: MyResume - v4.7.0
+  * Template URL: https://bootstrapmade.com/free-html-bootstrap-template-my-resume/
+  * Author: BootstrapMade.com
+  * License: https://bootstrapmade.com/license/
+  ======================================================== -->
 </head>
+
 <body>
-<!-- partial:index.partial.html -->
-<body id="particles-js"></body>
-<div class="animated bounceInDown">
-  <div class="container">
-    <span class="error animated tada" id="msg"></span>
-    <form name="form1" class="box" method="post">
-    <h1>
-    </h1>
-      <h1>LBY Logistic</h1>
-        <input type="email" name="email" placeholder="Email" autocomplete="on">
-        <i id="eye"></i>
-        <input type="password" name="password" placeholder="Passsword" id="pwd" autocomplete="off">
-        <label>
-        
-         
-        </label>
+
+<i class="bi bi-list mobile-nav-toggle d-xl-none " ></i>
+  <!-- ======= Mobile nav toggle button ======= -->
+  <!-- <button type="button" class="mobile-nav-toggle d-xl-none"><i class="bi bi-list mobile-nav-toggle"></i></button> -->
+  <header id="header" class="d-flex flex-column justify-content-center">
+
+    <nav id="navbar" class="navbar nav-menu">
+      <ul>
+ <?php if (Session::get('id') != TRUE) { ?>
+       <li >            
+<a class="nav-link" href="login.php"><i class="bx bx-home "></i><span> Login</span></a>
+</li> 
+<?php  } ?>
+      <?php if (Session::get('id') == TRUE) { ?>
+       <li >            
+<a class="nav-link" href="index.php"><i class="bx bx-home "></i><span> home </span></a>
+</li> 
+ <?php if (Session::get('roleid') == '3'  ||Session::get('roleid') == '6' || Session::get('roleid') == '1' ){ ?>
+   <li >            
+<a class="nav-link" href="Received_item.php"><span class="iconify" data-icon="icon-park-outline:delivery"></span><span> receive item </span></a>
+</li> 
+ <?php } ?>
+            <?php if (Session::get('roleid') == '2') { ?>
+
+             
+  <li >            
+<a class="nav-link" href="additem.php"><i class="bx bx-file-blank "> </i><span>Add item </span></a>
+</li> 
+   <?php  }?>
+<?php if (Session::get('roleid') == '1') { ?>
+              <li >
+ 
+                  <a class="nav-link nav-link scrollto" href="dasbord.php"><i class="bx bx-user"></i><span>Dasbord </span></a>
+                 
+              </li>
+                <li >
+             
+                  <a class="nav-link nav-link scrollto" href="addmoney.php"> <i class="bx bx-money"></i><span>Deposit WhitDraw </span></a>
        
-        <input type="submit"  class="btn1" name="login" > s
-      </form>
-         <a href="#" class="dnthave"></a>
-  </div> 
-       <div class="footer">
-      <span>Made  <a href="https://www.google.de/maps/place/Augsburger+Puppenkiste/@48.360357,10.903245,17z/data=!3m1!4b1!4m2!3m1!1s0x479e98006610a511:0x73ac6b9f80c4048f"><a >By Clean code</a></span>
-    </div>
-</div>
-<!-- partial -->
-  <script src='https://cldup.com/S6Ptkwu_qA.js'></script><script  src="./script.js"></script>
+ 
+                
+               </li>
+                <li >
+            
 
-</body>
+<a class="nav-link" href="mark.php"><i><span class="iconify" data-icon="bxs:ship"></span></i><span>Shipments weight </span></a>
 
+ </li>
+              <li class="nav-item">
 
-</html>
-<style>
-  /* CSS Libraries Used 
+<a class="nav-link" href="additem.php"><i class="bx bx-file-blank "></i><span>Add item </span></a>
 
-*Animate.css by Daniel Eden.
-*FontAwesome 4.7.0
-*Typicons
+</li>
+              <li class="nav-item"
 
-*/
+              <?php
 
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400');
+                          $path = $_SERVER['SCRIPT_FILENAME'];
+                          $current = basename($path, '.php');
+                          if ($current == 'addUser') {
+                            echo " active ";
+                          }
 
-body, html {
-  font-family: 'Source Sans Pro', sans-serif;
-  background-color: #1d243d;
-  padding: 0;
-  margin: 0;
-}
+                         ?>">
 
-#particles-js {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-}
+                <a class="nav-link" href="QR.php"><i class="bx bx-code plus mr-2"></i><span>  QR </span></a>
+               
+              </li>
+            <?php  } ?>
 
-.container{
-  margin: 0;
-  top: 50px;
-  left: 50%;
-  position: absolute;
-  text-align: center;
-  transform: translateX(-50%);
-  background-color: rgb( 33, 41, 66 );
-  border-radius: 9px;
-  border-top: 10px solid #79a6fe;
-  border-bottom: 10px solid #8BD17C;
-  width: 400px;
-  height: 500px;
-  box-shadow: 1px 1px 108.8px 19.2px rgb(25,31,53);
-}
+            <li class="nav-item
+            <?php
 
-.box h4 {
-  font-family: 'Source Sans Pro', sans-serif;
-  color: #5c6bc0; 
-  font-size: 18px;
-  margin-top:94px;;
-}
+      				$path = $_SERVER['SCRIPT_FILENAME'];
+      				$current = basename($path, '.php');
+      				if ($current == 'profile') {
+      					echo "active ";
+      				}
 
-.box h4 span {
-  color: #dfdeee;
-  font-weight: lighter;
-}
+      			 ?>
 
-.box h1 {
-  font-family: 'Source Sans Pro', sans-serif;
-  font-size: 38px;
-  color: #a1a4ad;
-  letter-spacing: 1.5px;
-  margin-top: -15px;
-  margin-bottom: 70px;
-}
+            ">
 
-.box input[type = "text"],.box input[type = "password"],.box input[type = "email"] {
-  display: block;
-  margin: 20px auto;
-  background: #262e49;
-  border: 0;
-  border-radius: 5px;
-  padding: 14px 10px;
-  width: 320px;
-  outline: none;
-  color: #d6d6d6;
-      -webkit-transition: all .2s ease-out;
-    -moz-transition: all .2s ease-out;
-    -ms-transition: all .2s ease-out;
-    -o-transition: all .2s ease-out;
-    transition: all .2s ease-out;
-  
-}
-::-webkit-input-placeholder {
-  color: #565f79;
-}
+           
 
-.box input[type = "text"]:focus,.box input[type = "password"]:focus {
-  border: 1px solid #79A6FE;
-  
-}
-.box input[type = "email"]:focus,.box input[type = "password"]:focus {
-  border: 1px solid #79A6FE;
-  
-}
-a{
-  color: #5c7fda;
-  text-decoration: none;
-}
+                    		
+            <a class="nav-link" href="?action=logout"><i class="bx bx-log-out mr-2 "></i><span>Logout</a>
+            </li>
+          <?php }else{ ?>
 
-a:hover {
-  text-decoration: underline;
-}
+              <li class="nav-item
 
- label input[type = "checkbox"] {
-  display: none; /* hide the default checkbox */
-}
+              <?php
 
-/* style the artificial checkbox */
-label span {
-  height: 13px;
-  width: 13px;
-  border: 2px solid #464d64;
-  border-radius: 2px;
-  display: inline-block;
-  position: relative;
-  cursor: pointer;
-  float: left;
-  left: 7.5%;
-}
+                          $path = $_SERVER['SCRIPT_FILENAME'];
+                          $current = basename($path, '.php');
+                          if ($current == 'register') {
+                            echo " active ";
+                          }
 
-.btn1 {
-  border:0;
-  background: #7f5feb;
-  color: #dfdeee;
-  border-radius: 100px;
-  width: 340px;
-  height: 49px;
-  font-size: 16px;
-  position: absolute;
-  top: 79%;
-  left: 8%;
-  transition: 0.3s;
-  cursor: pointer;
-}
+                         ?>">
+          <?php } ?>
+      </ul>
+    </nav><!-- .nav-menu -->
 
-.btn1:hover {
-  background: #5d33e6;
-}
-
-.rmb {
-  position: absolute;
-  margin-left: -24%;
-  margin-top: 0px;
-  color: #dfdeee;
-  font-size: 13px;
-}
-
-.forgetpass {
-  position: relative;
-  float: right;
-  right: 28px;
-}
-
-.dnthave{
-    position: absolute;
-    top: 92%;
-    left: 24%;
-}
-
-[type=checkbox]:checked + span:before {/* <-- style its checked state */
-    font-family: FontAwesome;
-    font-size: 16px;
-    content: "\f00c";
-    position: absolute;
-    top: -4px;
-    color: #896cec;
-    left: -1px;
-    width: 13px;
-}
-
-.typcn {
-  position: absolute;
-  left: 339px;
-  top: 282px;
-  color: #3b476b;
-  font-size: 22px;
-  cursor: pointer;
-}      
-
-.typcn.active {
-  color: #7f60eb;
-}
-
-.error {
-  background: #ff3333;
-  text-align: center;
-  width: 337px;
-  height: 20px;
-  padding: 2px;
-  border: 0;
-  border-radius: 5px;
-  margin: 10px auto 10px;
-  position: absolute;
-  top: 31%;
-  left: 7.2%;
-  color: white;
-  display: none;
-}
-
-.footer {
-    position: relative;
-    left: 0;
-    bottom: 0;
-    top: 605px;
-    width: 100%;
-    color: #78797d;
-    font-size: 14px;
-    text-align: center;
-}
-
-.footer .fa {
-  color: #fff;;
-}
-</style>
+  </header><!-- End Header -->
+  </section><!-- End Hero -->
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js" ></script>
+  <script src="filter.js" defer></script>
